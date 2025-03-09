@@ -1,0 +1,1 @@
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/PaperClock.hex verify reset exit"
