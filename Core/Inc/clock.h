@@ -8,7 +8,7 @@
 typedef struct
 {
     PAINT_TIME pt;
-    time_t now;
+    long long int offset;
     int mode; // 1: Setting, 0: Running
 } Clock_CTX;
 

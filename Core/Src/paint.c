@@ -745,9 +745,55 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
     Paint_DrawChar(Xstart + Dx  + Dx / 4 + Dx / 2   , Ystart, ':'                    , Font, Color_Background, Color_Foreground);
     Paint_DrawChar(Xstart + Dx * 2 + Dx / 2         , Ystart, value[pTime->Min / 10] , Font, Color_Background, Color_Foreground);
     Paint_DrawChar(Xstart + Dx * 3 + Dx / 2         , Ystart, value[pTime->Min % 10] , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2 - Dx / 4, Ystart, ':'                    , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 5                  , Ystart, value[pTime->Sec / 10] , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 6                  , Ystart, value[pTime->Sec % 10] , Font, Color_Background, Color_Foreground);
+}
+
+/******************************************************************************
+function:	Display date
+parameter:
+    Xstart           ：X coordinate
+    Ystart           : Y coordinate
+    pTime            : Time-related structures
+    Font             ：A structure pointer that displays a character size
+    Color_Foreground : Select the foreground color
+    Color_Background : Select the background color
+******************************************************************************/
+void Paint_DrawDate(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
+                    UWORD Color_Foreground, UWORD Color_Background)
+{
+    uint8_t value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    UWORD Dx = Font->Width;
+
+    //Write data into the cache
+    Paint_DrawChar(Xstart                               , Ystart, value[pTime->Year / 1000]      , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx                          , Ystart, value[pTime->Year % 1000 / 100], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 2                      , Ystart, value[pTime->Year % 100 / 10]  , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 3                      , Ystart, value[pTime->Year % 10]        , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 3  + Dx / 4 + Dx / 2   , Ystart, '-'                            , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2             , Ystart, value[pTime->Month / 10]       , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 5 + Dx / 2             , Ystart, value[pTime->Month % 10]       , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 5  + Dx / 4 + Dx       , Ystart, '-'                            , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 6 + Dx                 , Ystart, value[pTime->Day / 10]         , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 7 + Dx                , Ystart, value[pTime->Day % 10]          , Font, Color_Background, Color_Foreground);
+}
+
+
+void Paint_DrawSettingDate(UWORD Xstart, UWORD Ystart, int year[4], int month[2], int day[2], int target)
+{
+    uint8_t value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    UWORD Dx = Font24.Width;
+
+    Paint_DrawChar(Xstart                               , Ystart, value[year[0]]                 , &Font24, target == 0 ? BLACK : WHITE, target == 0 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx                          , Ystart, value[year[1]]                 , &Font24, target == 1 ? BLACK : WHITE, target == 1 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 2                      , Ystart, value[year[2]]                 , &Font24, target == 2 ? BLACK : WHITE, target == 2 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 3                      , Ystart, value[year[3]]                 , &Font24, target == 3 ? BLACK : WHITE, target == 3 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 3  + Dx / 4 + Dx / 2   , Ystart, '-'                            , &Font24, BLACK, WHITE);
+    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2             , Ystart, value[month[0]]                , &Font24, target == 4 ? BLACK : WHITE, target == 4 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 5 + Dx / 2             , Ystart, value[month[1]]                , &Font24, target == 5 ? BLACK : WHITE, target == 5 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 5  + Dx / 4 + Dx       , Ystart, '-'                            , &Font24, BLACK, WHITE);
+    Paint_DrawChar(Xstart + Dx * 6 + Dx                 , Ystart, value[day[0]]                  , &Font24, target == 6 ? BLACK : WHITE, target == 6 ? WHITE : BLACK);
+    Paint_DrawChar(Xstart + Dx * 7 + Dx                , Ystart, value[day[1]]                   , &Font24, target == 7 ? BLACK : WHITE, target == 7 ? WHITE : BLACK);
 }
 
 /******************************************************************************

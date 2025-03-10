@@ -2,7 +2,8 @@
 
 void _Clock_Sync(Clock_CTX *ctx) {
     struct tm *_tm;
-    _tm = gmtime(&ctx->now);
+    time_t now = HAL_GetTick() / 1000 + ctx->offset;
+    _tm = gmtime(&now);
     ctx->pt.Year = 1900 + _tm->tm_year;
     ctx->pt.Month = 1 + _tm->tm_mon;
     ctx->pt.Day = _tm->tm_mday;
@@ -20,11 +21,11 @@ void _Clock_SyncBack(Clock_CTX *ctx) {
     _tm.tm_hour = ctx->pt.Hour;
     _tm.tm_min = ctx->pt.Min;
     _tm.tm_sec = ctx->pt.Sec;
-    ctx->now = mktime(&_tm);
+    ctx->offset = mktime(&_tm) - HAL_GetTick() / 1000;
 }
 
 void Clock_Init(Clock_CTX *ctx) {
-    time(&ctx->now);
+    ctx->offset = 0;
     _Clock_Sync(ctx);
     ctx->mode = 0;
 }
@@ -33,7 +34,6 @@ void Clock_Tick(Clock_CTX *ctx) {
     if (ctx->mode == 1) {
         return;
     }
-    ctx->now ++;
     _Clock_Sync(ctx);
 }
 

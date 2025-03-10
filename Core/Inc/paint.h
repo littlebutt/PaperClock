@@ -139,6 +139,8 @@ void Paint_DrawString_CN(UWORD Xstart, UWORD Ystart, const char * pString, cFONT
 void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
 void Paint_DrawNumDecimals(UWORD Xpoint, UWORD Ypoint, double Nummber, sFONT* Font, UWORD Digit, UWORD Color_Foreground, UWORD Color_Background); // Able to display decimals
 void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
+void Paint_DrawDate(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font, UWORD Color_Foreground, UWORD Color_Background);
+void Paint_DrawSettingDate(UWORD Xstart, UWORD Ystart, int year[4], int month[2], int day[2], int target);
 
 //pic
 void Paint_DrawBitMap(const unsigned char* image_buffer);
