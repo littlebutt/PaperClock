@@ -17,6 +17,8 @@ void Panel_Init(Panel_CTX *ctx, Clock_CTX *c_ctx);
 
 void Panel_ToggleSetting(Panel_CTX *ctx);
 
+void Panel_StartSetting(Panel_CTX *ctx);
+
 void Panel_MoveCursor(Panel_CTX *ctx);
 
 void Panel_SetNumber(Panel_CTX *ctx);

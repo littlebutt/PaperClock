@@ -53,6 +53,7 @@ TIM_HandleTypeDef htim2;
 Clock_CTX ctx;
 Panel_CTX p_ctx;
 long long int global_tick;
+extern volatile uint32_t uwTick; 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -79,9 +80,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if(GPIO_Pin == GPIO_PIN_9) {
-    HAL_Delay(10);  // 10ms 消抖
-    Panel_ToggleSetting(&p_ctx);
-    
+    Panel_StartSetting(&p_ctx);
+    uwTick += 60 * 1000 * 3;
   }
 }
 /* USER CODE END 0 */
@@ -146,6 +146,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);  
   Paint_SelectImage(BlackImage);
+  int count = 0;
   while (1)
   {
     /* USER CODE END WHILE */
@@ -155,12 +156,16 @@ int main(void)
       Paint_ClearWindows(0, 0, Font24.Width * 7, Font24.Height * 2, WHITE);
       Paint_DrawDate(0, 0, &ctx.pt, &Font24, WHITE, BLACK);
       Paint_DrawTime(0, 24, &ctx.pt, &Font24, WHITE, BLACK);
-      EPD_2IN9_V2_Display_Partial(BlackImage);
-      HAL_Delay(60 * 1000);
+      if (count % 5 == 0) {
+        EPD_2IN9_V2_Display(BlackImage);
+      } else {
+        EPD_2IN9_V2_Display_Partial(BlackImage);
+      }
+      count ++;
+      HAL_Delay(60 * 1000 * 3);
       if (global_tick == 5 * 60) {
         global_tick = 0;
         EPD_2IN9_V2_Clear();
-	
         EPD_2IN9_V2_Sleep();
         free(BlackImage);
         BlackImage = NULL;
@@ -171,7 +176,9 @@ int main(void)
     } else {
       Paint_ClearWindows(0, 0, Font24.Width * 7, Font24.Height * 2, WHITE);
       Paint_DrawSettingDate(0, 0, p_ctx.year_digits, p_ctx.month_digits, p_ctx.day_digits, p_ctx.target);
+      Paint_DrawSettingTime(0, 24, p_ctx.hour_digits, p_ctx.minute_digits, p_ctx.target);
       EPD_2IN9_V2_Display_Partial(BlackImage);
+
     }
     
   }

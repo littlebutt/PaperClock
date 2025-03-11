@@ -41,6 +41,23 @@ void Panel_ToggleSetting(Panel_CTX *ctx) {
     }
 }
 
+void Panel_StartSetting(Panel_CTX *ctx) {
+    ctx->c_ctx->mode = 1;
+    ctx->year_digits[0] = ctx->c_ctx->pt.Year / 1000;
+    ctx->year_digits[1] = ctx->c_ctx->pt.Year % 1000 / 100;
+    ctx->year_digits[2] = ctx->c_ctx->pt.Year % 100 / 10;
+    ctx->year_digits[3] = ctx->c_ctx->pt.Year % 10;
+    ctx->month_digits[0] = ctx->c_ctx->pt.Month / 10;
+    ctx->month_digits[1] = ctx->c_ctx->pt.Month % 10;
+    ctx->day_digits[0] = ctx->c_ctx->pt.Day / 10;
+    ctx->day_digits[1] = ctx->c_ctx->pt.Day % 10;
+    ctx->hour_digits[0] = ctx->c_ctx->pt.Hour / 10;
+    ctx->hour_digits[1] = ctx->c_ctx->pt.Hour % 10;
+    ctx->minute_digits[0] = ctx->c_ctx->pt.Min / 10;
+    ctx->minute_digits[1] = ctx->c_ctx->pt.Min % 10;
+    ctx->target = 0;
+}
+
 void Panel_MoveCursor(Panel_CTX *ctx) {
     if (ctx->target == 12) {
         return;
