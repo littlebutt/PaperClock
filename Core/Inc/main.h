@@ -67,6 +67,15 @@ void Error_Handler(void);
 #define SPI_CS_GPIO_Port GPIOA
 #define PWR_Pin GPIO_PIN_6
 #define PWR_GPIO_Port GPIOA
+#define FIN_Pin GPIO_PIN_6
+#define FIN_GPIO_Port GPIOB
+#define ADD_Pin GPIO_PIN_7
+#define ADD_GPIO_Port GPIOB
+#define MV_Pin GPIO_PIN_8
+#define MV_GPIO_Port GPIOB
+#define SET_Pin GPIO_PIN_9
+#define SET_GPIO_Port GPIOB
+#define SET_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 

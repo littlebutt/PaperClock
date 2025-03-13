@@ -26,6 +26,7 @@
 #include "clock.h"
 #include "panel.h"
 #include "epd_2in9_v2.h"
+#include "pic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,9 +82,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if(GPIO_Pin == GPIO_PIN_9) {
     Panel_StartSetting(&p_ctx);
-    uwTick += 60 * 1000 * 3;
+    uwTick += 60 * 1000;
   }
 }
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -146,6 +150,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   Paint_NewImage(BlackImage, EPD_2IN9_V2_WIDTH, EPD_2IN9_V2_HEIGHT, 90, WHITE);  
   Paint_SelectImage(BlackImage);
+  Paint_DrawBitMap(bitmap_bytes); // 128 * 16
   int count = 0;
   while (1)
   {
@@ -153,32 +158,39 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     if (ctx.mode == 0) {
-      Paint_ClearWindows(0, 0, Font24.Width * 7, Font24.Height * 2, WHITE);
-      Paint_DrawDate(0, 0, &ctx.pt, &Font24, WHITE, BLACK);
-      Paint_DrawTime(0, 24, &ctx.pt, &Font24, WHITE, BLACK);
+      Paint_ClearWindows(Font24.Width, Font24.Height, Font24.Width * 11, Font24.Height * 3, WHITE);
+      Paint_DrawDate(Font24.Width, Font24.Height, &ctx.pt, &Font24, WHITE, BLACK);
+      Paint_DrawTime(Font24.Width, Font24.Height * 2, &ctx.pt, &Font24, WHITE, BLACK);
       if (count % 5 == 0) {
         EPD_2IN9_V2_Display(BlackImage);
       } else {
         EPD_2IN9_V2_Display_Partial(BlackImage);
       }
       count ++;
-      HAL_Delay(60 * 1000 * 3);
-      if (global_tick == 5 * 60) {
-        global_tick = 0;
-        EPD_2IN9_V2_Clear();
-        EPD_2IN9_V2_Sleep();
-        free(BlackImage);
-        BlackImage = NULL;
-        DEV_Delay_ms(2000);//important, at least 2s
-        // close 5V
-        DEV_Module_Exit();
-      }
+      HAL_Delay(60 * 1000);
     } else {
-      Paint_ClearWindows(0, 0, Font24.Width * 7, Font24.Height * 2, WHITE);
-      Paint_DrawSettingDate(0, 0, p_ctx.year_digits, p_ctx.month_digits, p_ctx.day_digits, p_ctx.target);
-      Paint_DrawSettingTime(0, 24, p_ctx.hour_digits, p_ctx.minute_digits, p_ctx.target);
+      Paint_ClearWindows(Font24.Width, Font24.Height, Font24.Width * 11, Font24.Height * 3, WHITE);
+      Paint_DrawSettingDate(Font24.Width, Font24.Height, p_ctx.year_digits, p_ctx.month_digits, p_ctx.day_digits, p_ctx.target);
+      Paint_DrawSettingTime(Font24.Width, Font24.Height * 2, p_ctx.hour_digits, p_ctx.minute_digits, p_ctx.target);
       EPD_2IN9_V2_Display_Partial(BlackImage);
-
+      while (1)
+      {
+        if (HAL_GPIO_ReadPin(MV_GPIO_Port, MV_Pin) == GPIO_PIN_RESET) {
+          HAL_Delay(500);
+          Panel_MoveCursor(&p_ctx);
+          break;
+        }
+        if (HAL_GPIO_ReadPin(ADD_GPIO_Port, ADD_Pin) == GPIO_PIN_RESET) {
+          HAL_Delay(500);
+          Panel_SetNumber(&p_ctx);
+          break;
+        }
+        if (HAL_GPIO_ReadPin(FIN_GPIO_Port, FIN_Pin) == GPIO_PIN_RESET) {
+          HAL_Delay(500);
+          Panel_ToggleSetting(&p_ctx);
+          break;
+        }
+      }
     }
     
   }
@@ -339,11 +351,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(BUSY_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  /*Configure GPIO pins : FIN_Pin ADD_Pin MV_Pin */
+  GPIO_InitStruct.Pin = FIN_Pin|ADD_Pin|MV_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SET_Pin */
+  GPIO_InitStruct.Pin = SET_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(SET_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);

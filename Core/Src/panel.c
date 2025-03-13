@@ -23,7 +23,6 @@ void _Panel_StartSetting(Panel_CTX *ctx) {
 }
 
 void _Panel_FinishSetting(Panel_CTX *ctx) {
-    Clock_ToggleMode(ctx->c_ctx);
     ctx->target = 12;
     Clock_SetYear(ctx->c_ctx, ctx->year_digits[0] * 1000 + ctx->year_digits[1] * 100 + ctx->year_digits[2] * 10 + ctx->year_digits[3]);
     Clock_SetMonth(ctx->c_ctx, ctx->month_digits[0] * 10 + ctx->month_digits[1]);
@@ -31,6 +30,7 @@ void _Panel_FinishSetting(Panel_CTX *ctx) {
     Clock_SetHour(ctx->c_ctx, ctx->hour_digits[0] * 10 + ctx->hour_digits[1]);
     Clock_SetMinute(ctx->c_ctx, ctx->minute_digits[0] * 10 + ctx->minute_digits[1]);
     Clock_SetSecond(ctx->c_ctx, 0);
+    Clock_ToggleMode(ctx->c_ctx);
 }
 
 void Panel_ToggleSetting(Panel_CTX *ctx) {
