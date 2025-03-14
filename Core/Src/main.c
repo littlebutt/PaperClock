@@ -161,10 +161,9 @@ int main(void)
       Paint_ClearWindows(Font24.Width, Font24.Height, Font24.Width * 11, Font24.Height * 3, WHITE);
       Paint_DrawDate(Font24.Width, Font24.Height, &ctx.pt, &Font24, WHITE, BLACK);
       Paint_DrawTime(Font24.Width, Font24.Height * 2, &ctx.pt, &Font24, WHITE, BLACK);
+      EPD_2IN9_V2_Display_Partial(BlackImage);
       if (count % 5 == 0) {
         EPD_2IN9_V2_Display(BlackImage);
-      } else {
-        EPD_2IN9_V2_Display_Partial(BlackImage);
       }
       count ++;
       HAL_Delay(60 * 1000);
